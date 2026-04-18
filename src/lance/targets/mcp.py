@@ -10,7 +10,7 @@ Status: stub.
 
 from __future__ import annotations
 
-from aart.targets.base import Target, TargetContext, TargetTurn
+from lance.targets.base import Target, TargetContext, TargetTurn
 
 
 class MCPTarget:

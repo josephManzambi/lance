@@ -10,7 +10,7 @@ from typing import Protocol, runtime_checkable
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from aart.models.finding import Verdict
+from lance.models.finding import Verdict
 
 
 class JudgeVerdict(BaseModel):

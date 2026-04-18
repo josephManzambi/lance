@@ -2,7 +2,7 @@
 
 Source: https://atlas.mitre.org/
 
-Stub — populate with the subset of techniques AART cares about as attacks land.
+Stub — populate with the subset of techniques LANCE cares about as attacks land.
 """
 
 from __future__ import annotations

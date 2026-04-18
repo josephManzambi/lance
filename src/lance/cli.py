@@ -1,9 +1,9 @@
-"""AART CLI — thin wiring layer around the core.
+"""LANCE CLI — thin wiring layer around the core.
 
 Commands:
-    aart run         — execute an attack against a target
-    aart list        — list registered attacks with their mappings
-    aart version     — print version info
+    lance run         — execute an attack against a target
+    lance list        — list registered attacks with their mappings
+    lance version     — print version info
 
 The CLI is deliberately thin. All business logic lives in core modules;
 `cli.py` only parses arguments and delegates.
@@ -18,11 +18,11 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-from aart import __version__
+from lance import __version__
 
 app = typer.Typer(
-    name="aart",
-    help="Agentic-Aware Red Teaming — cloud-native red teaming for agentic AI systems.",
+    name="lance",
+    help="Lateral Agentic eNvironment Cloud Exploitation — cloud-native red teaming for agentic AI systems.",
     no_args_is_help=True,
     add_completion=False,
 )
@@ -32,8 +32,8 @@ console = Console()
 
 @app.command()
 def version() -> None:
-    """Print AART version and exit."""
-    console.print(f"aart {__version__}")
+    """Print LANCE version and exit."""
+    console.print(f"lance {__version__}")
 
 
 @app.command(name="list")
@@ -41,7 +41,7 @@ def list_attacks() -> None:
     """List registered attacks with their framework mappings."""
     # In v0.1 this will discover attacks via entry points or a registry.
     # For now we show the stub attack.
-    from aart.attacks.indirect_injection import IndirectInjectionViaToolOutput
+    from lance.attacks.indirect_injection import IndirectInjectionViaToolOutput
 
     attacks = [IndirectInjectionViaToolOutput]
 
@@ -91,7 +91,7 @@ def run(
     Not implemented yet — lands with v0.1. Exit code 2 until then.
     """
     console.print(
-        f"[yellow]AART v0.1 not yet implemented.[/yellow] "
+        f"[yellow]LANCE v0.1 not yet implemented.[/yellow] "
         f"Would run [cyan]{attack}[/cyan] against [cyan]{target}[/cyan], "
         f"output to [cyan]{output}[/cyan] (include_unstable={include_unstable})."
     )

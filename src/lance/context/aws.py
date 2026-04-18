@@ -8,7 +8,7 @@ Status: stub. Implementation pending v0.1.
 
 from __future__ import annotations
 
-from aart.models.finding import DeploymentContext
+from lance.models.finding import DeploymentContext
 
 
 async def probe_iam_role(role_arn: str) -> DeploymentContext:

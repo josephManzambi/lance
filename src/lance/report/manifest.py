@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from aart.models.finding import Finding
+from lance.models.finding import Finding
 
 
 def write_manifest(finding: Finding, output_dir: Path) -> Path:

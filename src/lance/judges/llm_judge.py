@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from aart.judges.base import Judge, JudgeVerdict
+from lance.judges.base import Judge, JudgeVerdict
 
 
 class OllamaJudge:

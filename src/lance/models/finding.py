@@ -1,4 +1,4 @@
-"""Finding — the canonical output unit of an AART attack run.
+"""Finding — the canonical output unit of an LANCE attack run.
 
 A Finding represents a single, reproducible, attributable result of an attack
 against an agentic target. It is designed to be:
@@ -8,7 +8,7 @@ against an agentic target. It is designed to be:
 3. Mapped — cross-references OWASP ASI 2026, MITRE ATLAS, and CSA AICM.
 4. Honest — records whether the result was stable across N runs, not just one.
 
-Findings are serialized to JSON. They are the unit of citation for AART research.
+Findings are serialized to JSON. They are the unit of citation for LANCE research.
 """
 
 from __future__ import annotations
@@ -73,7 +73,7 @@ class FrameworkMapping(BaseModel):
 
 
 class DeploymentContext(BaseModel):
-    """Cloud-context impact data — AART's differentiator.
+    """Cloud-context impact data — LANCE's differentiator.
 
     Even if a prompt injection succeeds against the model, it is only a real
     vulnerability if the agent's deployment context turns it into exploitable
@@ -114,7 +114,7 @@ class ReproducibilityManifest(BaseModel):
         default_factory=dict,
         description="All prompts used: attacker system/user, judge rubric, etc.",
     )
-    aart_version: str
+    lance_version: str
     python_version: str
     platform: str = Field(description="e.g. 'darwin-arm64'.")
     runs_attempted: int = Field(
@@ -145,9 +145,9 @@ class Evidence(BaseModel):
 
 
 class Finding(BaseModel):
-    """Canonical result unit of an AART attack run.
+    """Canonical result unit of an LANCE attack run.
 
-    Findings are the unit of citation for AART research. They are immutable
+    Findings are the unit of citation for LANCE research. They are immutable
     once constructed; to revise a result, produce a new Finding.
     """
 

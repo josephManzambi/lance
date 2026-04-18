@@ -1,12 +1,12 @@
-# AART — Agentic-Aware Red Teaming
+# LANCE — Lateral Agentic eNvironment Cloud Exploitation
 
 Cloud-native red-teaming framework for deployed agentic AI systems.
 
-AART attacks agents the way real adversaries do — through tool outputs, RAG sources, and MCP connections — and traces the blast radius through the cloud deployment context (IAM roles, data access, logging posture).
+LANCE attacks agents the way real adversaries do — through tool outputs, RAG sources, and MCP connections — and traces the blast radius through the cloud deployment context (IAM roles, data access, logging posture).
 
 > **Status:** pre-release. v0.1 in development. Not ready for production use.
 
-## What AART tests
+## What LANCE tests
 
 - **Targets:** MCP servers with AWS-backed tools *(v0.1)*
 - **Attack classes:** Indirect prompt injection through tool outputs *(v0.1)*
@@ -28,8 +28,8 @@ See [`VISION.md`](./VISION.md) for the design thesis and scope.
 Requires Python ≥ 3.12 and [uv](https://docs.astral.sh/uv/).
 
 ```bash
-git clone https://github.com/{GITHUB_HANDLE}/aart.git
-cd aart
+git clone https://github.com/josephManzambi/lance.git
+cd lance
 uv sync
 ```
 
@@ -43,7 +43,7 @@ ollama pull qwen2.5:72b   # or llama3.3:70b
 
 ```bash
 # Run an attack against a target you've authorized
-uv run aart run \
+uv run lance run \
   --target examples/mcp_local.yaml \
   --attack indirect_injection \
   --output findings/
@@ -53,13 +53,13 @@ See [`docs/getting-started.md`](./docs/getting-started.md) for a walkthrough.
 
 ## Contributing
 
-AART uses a strict contributor contract. Read [`CLAUDE.md`](./CLAUDE.md) before submitting changes — it applies to human contributors as well as AI-assisted development.
+LANCE uses a strict contributor contract. Read [`CLAUDE.md`](./CLAUDE.md) before submitting changes — it applies to human contributors as well as AI-assisted development.
 
 New attacks follow the contract in §7 of `CLAUDE.md`.
 
 ## Research integrity
 
-AART findings are intended for public citation. Attacks must:
+LANCE findings are intended for public citation. Attacks must:
 
 - Declare their framework mappings (OWASP ASI, MITRE ATLAS, CSA AICM)
 - Include a threat-model docstring
@@ -71,13 +71,13 @@ Flaky or unreviewed attacks are disabled by default.
 
 Apache 2.0. See [`LICENSE`](./LICENSE).
 
-## Citing AART
+## Citing LANCE
 
-If AART contributed to a publication, please cite as:
+If LANCE contributed to a publication, please cite as:
 
 ```
-Manzambi, J. (2026). AART: Agentic-Aware Red Teaming.
-https://github.com/{GITHUB_HANDLE}/aart
+Manzambi, J. (2026). LANCE: Lateral Agentic eNvironment Cloud Exploitation.
+https://github.com/josephManzambi/lance
 ```
 
 ## Author

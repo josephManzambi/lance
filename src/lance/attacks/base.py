@@ -1,4 +1,4 @@
-"""Attack protocol — base class for all AART attacks.
+"""Attack protocol — base class for all LANCE attacks.
 
 An attack is a plugin module that:
 1. Declares its framework mappings as class attributes.
@@ -18,8 +18,8 @@ from typing import ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from aart.models.finding import Finding
-from aart.targets.base import Target
+from lance.models.finding import Finding
+from lance.targets.base import Target
 
 
 class AttackConfig(BaseModel):
@@ -53,7 +53,7 @@ class AttackConfig(BaseModel):
 
 
 class Attack(ABC):
-    """Base class for all AART attacks.
+    """Base class for all LANCE attacks.
 
     Subclasses must declare framework mappings as class attributes and
     implement the `run` method.

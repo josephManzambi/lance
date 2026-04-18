@@ -1,9 +1,9 @@
-"""Target protocol — the abstraction for anything AART can attack.
+"""Target protocol — the abstraction for anything LANCE can attack.
 
 A Target is an agentic system under test. It knows how to:
 - Receive an adversarial input and return a response.
 - Report the tool calls it made during the interaction.
-- Expose its deployment context (IAM role, tools, etc.) for AART to analyze.
+- Expose its deployment context (IAM role, tools, etc.) for LANCE to analyze.
 
 New target types (LangChain agent, CrewAI crew, custom HTTP agent, etc.)
 implement this protocol in their own file under `targets/`.
@@ -60,14 +60,14 @@ class TargetContext(BaseModel):
 
 @runtime_checkable
 class Target(Protocol):
-    """The AART target protocol.
+    """The LANCE target protocol.
 
     Implementations live in `targets/<type>.py`. They are NOT Pydantic models
     (they hold connections, sessions, etc.), but every method that crosses
     a module boundary must accept/return Pydantic models.
 
     Implementations must be async — all target interactions go through
-    async I/O so AART can parallelize attacks without threading.
+    async I/O so LANCE can parallelize attacks without threading.
     """
 
     @property
@@ -82,7 +82,7 @@ class Target(Protocol):
         """Send a single user input to the target and return the interaction.
 
         The target handles its own system prompt, tool execution, memory —
-        AART treats it as a black box that takes a string and returns a TargetTurn.
+        LANCE treats it as a black box that takes a string and returns a TargetTurn.
 
         Raises:
             TargetUnreachableError: if the target cannot be contacted.
@@ -114,6 +114,6 @@ class TargetAuthorizationError(TargetError):
     """The target config points at a host not explicitly authorized.
 
     Raised before any network call to a non-whitelisted target. This is the
-    safety rail that prevents AART from being turned into an unauthorized
+    safety rail that prevents LANCE from being turned into an unauthorized
     attack tool.
     """

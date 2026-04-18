@@ -22,9 +22,9 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from aart.attacks.base import Attack, AttackConfig
-from aart.models.finding import Finding
-from aart.targets.base import Target
+from lance.attacks.base import Attack, AttackConfig
+from lance.models.finding import Finding
+from lance.targets.base import Target
 
 
 class IndirectInjectionViaToolOutput(Attack):

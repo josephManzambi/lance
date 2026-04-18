@@ -1,21 +1,21 @@
-# AART — Vision
+# LANCE — Vision
 
-## What AART is
+## What LANCE is
 
-AART (Agentic-Aware Red Teaming) is a red-teaming framework for **deployed agentic AI systems**. It attacks agents the way a real adversary would: through their tool outputs, their RAG sources, their MCP connections — and it traces the damage through the cloud deployment they live in.
+LANCE (Lateral Agentic eNvironment Cloud Exploitation) is a red-teaming framework for **deployed agentic AI systems**. It attacks agents the way a real adversary would: through their tool outputs, their RAG sources, their MCP connections — and it traces the damage through the cloud deployment they live in.
 
-## What AART is not
+## What LANCE is not
 
 - Not a general-purpose LLM safety evaluator. (Use Garak, DeepTeam, Giskard.)
 - Not a model capability benchmark. (That's a sister project, not this one.)
-- Not a hosted service. AART runs on your machine, against targets you authorize.
+- Not a hosted service. LANCE runs on your machine, against targets you authorize.
 - Not an automated remediation tool. Findings describe; humans prescribe.
 
-## Why AART exists
+## Why LANCE exists
 
 Existing agentic red-team tools test **the model's response to adversarial prompts**. Real breaches don't stop there. A prompt injection that causes an agent to invoke the wrong tool is only a vulnerability if the tool's IAM role, data access, and logging posture turn it into an exploitable blast radius.
 
-AART's contribution: **cloud-context-aware findings.** When we report a prompt injection, we report it together with the IAM policy that made it dangerous.
+LANCE's contribution: **cloud-context-aware findings.** When we report a prompt injection, we report it together with the IAM policy that made it dangerous.
 
 ## Scope: v0.1
 
@@ -42,8 +42,8 @@ AART's contribution: **cloud-context-aware findings.** When we report a prompt i
 
 ## What "done" looks like for v0.1
 
-- `aart run --target examples/mcp_vulnerable.yaml --attack indirect_injection` executes end-to-end.
+- `lance run --target examples/mcp_vulnerable.yaml --attack indirect_injection` executes end-to-end.
 - Produces a `Finding` JSON manifest and a human-readable Markdown report.
 - At least one reproduced public-interest finding from a deliberately vulnerable MCP server we stand up ourselves.
 - Tests pass. Mypy --strict passes. Docs build.
-- One blog post analyzing the finding, with AART credited as the tool used (not the headline).
+- One blog post analyzing the finding, with LANCE credited as the tool used (not the headline).

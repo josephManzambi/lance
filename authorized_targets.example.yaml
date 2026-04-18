@@ -1,4 +1,4 @@
-# Hosts AART is authorized to target. Anything not in this list triggers
+# Hosts LANCE is authorized to target. Anything not in this list triggers
 # TargetAuthorizationError. Copy to authorized_targets.yaml (gitignored).
 
 authorized:

@@ -1,8 +1,8 @@
-"""Tests for the Finding model — AART's canonical output unit."""
+"""Tests for the Finding model — LANCE's canonical output unit."""
 
 from __future__ import annotations
 
-from aart.models.finding import (
+from lance.models.finding import (
     DeploymentContext,
     Evidence,
     Finding,
@@ -20,7 +20,7 @@ def _minimal_manifest(runs_succeeded: int = 1) -> ReproducibilityManifest:
         target_config_hash="a" * 64,
         attacker_model="ollama:qwen2.5:72b",
         judge_model="ollama:llama3.3:70b",
-        aart_version="0.1.0a0",
+        lance_version="0.1.0a0",
         python_version="3.12.0",
         platform="darwin-arm64",
         runs_attempted=1,
