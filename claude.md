@@ -11,9 +11,7 @@ Cloud-native red-teaming framework for *deployed* agentic AI systems. Tests agen
 
 ---
 
-## 1. Who is building this
-
-Joseph Manzambi. Cloud security specialist (AWS), vCISO trajectory. CAISS certified. Based in Málaga.
+## 1. Quality bar
 
 This code will be cited in public research. Every architectural choice and every Finding it produces will be attributed to this project. The bar is research-grade, not production-grade MVP. The difference: reproducibility and honesty are requirements, not nice-to-haves.
 
