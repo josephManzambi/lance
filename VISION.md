@@ -25,12 +25,23 @@ LANCE's contribution: **cloud-context-aware findings.** When we report a prompt 
 - **Outputs:** JSON reproducibility manifest + Markdown finding report with framework mappings.
 - **Execution:** Local CLI only. Offline by default. No telemetry.
 
-## Scope: v0.2+ (sketch, not commitment)
+## Scope: v0.2 — depth on MCP + AWS (sketch, not commitment)
 
-- Second attack class (memory manipulation or tool chain hijacking).
-- LangChain/CrewAI target adapters.
-- Context probes for GCP and Azure.
+v0.2 expands **one axis only**: more attack classes against the same target type. The goal is to become *the* tool for AWS-backed MCP red-teaming before widening to other clouds or frameworks. Candidate attack classes:
+
+- Memory / context manipulation (persistent state poisoning).
+- Tool-chain hijacking (redirecting multi-step tool invocations).
+- Indirect RAG poisoning (attacks through retrieved documents).
+- Vector store poisoning (embedding-space attacks on agent memory).
+- OAuth scope-confusion attacks against MCP servers with delegated credentials.
+
+## Scope: v0.3+ (possibilities, not commitments)
+
+Explicitly deferred until v0.2 is stable:
+
+- Context probes for GCP and Azure (second cloud, same depth bar as AWS).
 - Attacker-model adapters for Anthropic/OpenAI APIs (opt-in, still local-default).
+- Non-MCP target adapters — only if MCP coverage is saturated and demand is real. LangChain/CrewAI are not commitments; the MCP ecosystem has absorbed most of that surface.
 
 ## Design principles
 
@@ -44,6 +55,7 @@ LANCE's contribution: **cloud-context-aware findings.** When we report a prompt 
 
 - `lance run --target examples/mcp_vulnerable.yaml --attack indirect_injection` executes end-to-end.
 - Produces a `Finding` JSON manifest and a human-readable Markdown report.
-- At least one reproduced public-interest finding from a deliberately vulnerable MCP server we stand up ourselves.
+- A deliberately vulnerable MCP reference target, stood up in this repo, that anyone can run locally and reproduce the finding against.
+- A **positioning artifact**: one comparison table (or short post) showing a concrete finding LANCE produces that prompt-only red-team tools miss — the IAM blast-radius context. Without this, the cloud-context thesis is implicit; with it, the thesis is visible.
 - Tests pass. Mypy --strict passes. Docs build.
 - One blog post analyzing the finding, with LANCE credited as the tool used (not the headline).
