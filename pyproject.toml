@@ -40,18 +40,10 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=8.3",
-    "pytest-asyncio>=0.24",
     "pytest-cov>=5.0",
-    "hypothesis>=6.112",
     "ruff>=0.6",
     "mypy>=1.11",
     "types-pyyaml",
-    "boto3-stubs[iam,s3,sts]",
-]
-docs = [
-    "mkdocs>=1.6",
-    "mkdocs-material>=9.5",
-    "mkdocstrings[python]>=0.26",
 ]
 
 [project.scripts]
@@ -128,7 +120,6 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
-asyncio_mode = "auto"
 addopts = [
     "-ra",
     "--strict-markers",
