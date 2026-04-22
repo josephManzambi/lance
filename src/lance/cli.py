@@ -11,7 +11,7 @@ The CLI is deliberately thin. All business logic lives in core modules;
 
 from __future__ import annotations
 
-import sys
+import asyncio
 from pathlib import Path
 
 import typer
@@ -19,7 +19,11 @@ from rich.console import Console
 from rich.table import Table
 
 from lance import __version__
+from lance.attacks.base import Attack, AttackConfig
 from lance.attacks.indirect_injection import IndirectInjectionViaToolOutput
+from lance.targets.base import Target, TargetAuthorizationError
+from lance.targets.config import TargetConfig
+from lance.targets.mcp import MCPTarget
 
 app = typer.Typer(
     name="lance",
@@ -33,6 +37,14 @@ app = typer.Typer(
 
 console = Console()
 
+ATTACK_REGISTRY: dict[str, type[Attack]] = {
+    IndirectInjectionViaToolOutput.name: IndirectInjectionViaToolOutput,
+}
+
+TARGET_REGISTRY: dict[str, type[MCPTarget]] = {
+    "mcp": MCPTarget,
+}
+
 
 @app.command()
 def version() -> None:
@@ -43,9 +55,7 @@ def version() -> None:
 @app.command(name="list")
 def list_attacks() -> None:
     """List registered attacks with their framework mappings."""
-    # In v0.1 this will discover attacks via entry points or a registry.
-    # For now we show the stub attack.
-    attacks = [IndirectInjectionViaToolOutput]
+    attacks = list(ATTACK_REGISTRY.values())
 
     table = Table(title="Registered attacks", show_lines=True)
     table.add_column("Name", style="cyan", no_wrap=True)
@@ -59,7 +69,7 @@ def list_attacks() -> None:
             attack_cls.name,
             ", ".join(attack_cls.owasp_asi) or "—",
             ", ".join(attack_cls.mitre_atlas) or "—",
-            "✓" if attack_cls.stable else "experimental",
+            "yes" if attack_cls.stable else "experimental",
             attack_cls.description,
         )
     console.print(table)
@@ -87,17 +97,81 @@ def run(
         "--include-unstable",
         help="Allow running attacks marked stable=False.",
     ),
+    probe: bool = typer.Option(
+        False,
+        "--probe/--no-probe",
+        help="Skip the attack; send one benign interact() and print the TargetTurn as JSON.",
+    ),
 ) -> None:
     """Execute an attack against a target and write Findings to disk.
 
-    Not implemented yet — lands with v0.1. Exit code 2 until then.
+    The v0.1 round-trip wiring: load the target config (authorization
+    gate fires here, before any I/O), spawn the target adapter, then
+    either probe it with a benign input or invoke the requested attack.
     """
-    console.print(
-        f"[yellow]LANCE v0.1 not yet implemented.[/yellow] "
-        f"Would run [cyan]{attack}[/cyan] against [cyan]{target}[/cyan], "
-        f"output to [cyan]{output}[/cyan] (include_unstable={include_unstable})."
+    try:
+        config = TargetConfig.load(target)
+    except TargetAuthorizationError as err:
+        console.print(f"[red]Authorization error:[/red] {err}")
+        raise typer.Exit(code=2) from err
+
+    target_cls = TARGET_REGISTRY.get(config.type)
+    if target_cls is None:
+        console.print(f"[red]Unsupported target type:[/red] {config.type!r}")
+        raise typer.Exit(code=2)
+
+    asyncio.run(
+        _run_async(
+            config=config,
+            target_cls=target_cls,
+            attack_name=attack,
+            output=output,
+            include_unstable=include_unstable,
+            probe=probe,
+        )
     )
-    sys.exit(2)
+
+
+async def _run_async(
+    *,
+    config: TargetConfig,
+    target_cls: type[MCPTarget],
+    attack_name: str,
+    output: Path,
+    include_unstable: bool,
+    probe: bool,
+) -> None:
+    target_instance = await target_cls.from_config(config)
+    try:
+        if probe:
+            turn = await target_instance.interact("ping")
+            console.print_json(turn.model_dump_json())
+            return
+
+        attack_cls = ATTACK_REGISTRY.get(attack_name)
+        if attack_cls is None:
+            console.print(f"[red]Unknown attack:[/red] {attack_name!r}")
+            raise typer.Exit(code=2)
+        if not attack_cls.stable and not include_unstable:
+            console.print(
+                f"[yellow]Attack {attack_name!r} is marked unstable.[/yellow] "
+                "Pass --include-unstable to run it."
+            )
+            raise typer.Exit(code=2)
+
+        try:
+            finding = await attack_cls().run(_as_target(target_instance), AttackConfig())
+        except NotImplementedError as err:
+            console.print(f"[yellow]Attack stub not implemented:[/yellow] {err}")
+            return
+        console.print(f"[green]Finding produced:[/green] {finding}")
+        console.print(f"[dim]Output directory (unused in v0.1): {output}[/dim]")
+    finally:
+        await target_instance.aclose()
+
+
+def _as_target(instance: MCPTarget) -> Target:
+    return instance
 
 
 if __name__ == "__main__":
