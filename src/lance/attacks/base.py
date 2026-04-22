@@ -94,6 +94,7 @@ class Attack(ABC):
     # --- Enforcement ---
 
     def __init_subclass__(cls, **kwargs: object) -> None:
+        """Validate required class attributes at subclass definition time."""
         super().__init_subclass__(**kwargs)
         required = ("name", "description", "owasp_asi", "mitre_atlas", "csa_aicm")
         missing = [attr for attr in required if not hasattr(cls, attr)]
@@ -103,9 +104,7 @@ class Attack(ABC):
                 f"{', '.join(missing)}"
             )
         if not cls.owasp_asi and not cls.mitre_atlas and not cls.csa_aicm:
-            raise TypeError(
-                f"Attack {cls.__name__} must declare at least one framework mapping."
-            )
+            raise TypeError(f"Attack {cls.__name__} must declare at least one framework mapping.")
 
     # --- API ---
 

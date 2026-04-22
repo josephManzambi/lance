@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import pytest
+from pydantic import ValidationError
+
 from lance.models.finding import (
     DeploymentContext,
     Evidence,
@@ -122,8 +125,5 @@ class TestFindingImmutability:
             manifest=_minimal_manifest(),
         )
         # Pydantic frozen models raise ValidationError on attribute assignment.
-        import pytest
-        from pydantic import ValidationError
-
         with pytest.raises(ValidationError):
-            finding.attack_name = "different"  # type: ignore[misc]
+            finding.attack_name = "different"
