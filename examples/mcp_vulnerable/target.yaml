@@ -1,0 +1,7 @@
+target_id: mcp-vulnerable-local
+type: mcp
+transport: stdio
+host: localhost
+command: ["uv", "run", "python", "examples/mcp_vulnerable/server.py"]
+deployment:
+  iam_role_arn: null
