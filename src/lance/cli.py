@@ -19,10 +19,14 @@ from rich.console import Console
 from rich.table import Table
 
 from lance import __version__
+from lance.attacks.indirect_injection import IndirectInjectionViaToolOutput
 
 app = typer.Typer(
     name="lance",
-    help="Lateral Agentic eNvironment Cloud Exploitation — cloud-native red teaming for agentic AI systems.",
+    help=(
+        "Lateral Agentic eNvironment Cloud Exploitation — "
+        "cloud-native red teaming for agentic AI systems."
+    ),
     no_args_is_help=True,
     add_completion=False,
 )
@@ -41,8 +45,6 @@ def list_attacks() -> None:
     """List registered attacks with their framework mappings."""
     # In v0.1 this will discover attacks via entry points or a registry.
     # For now we show the stub attack.
-    from lance.attacks.indirect_injection import IndirectInjectionViaToolOutput
-
     attacks = [IndirectInjectionViaToolOutput]
 
     table = Table(title="Registered attacks", show_lines=True)
