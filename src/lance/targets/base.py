@@ -27,9 +27,13 @@ class TargetTurn(BaseModel):
         default_factory=list,
         description="Tool calls made by the agent during this turn, in order.",
     )
-    raw_transcript: str | None = Field(
+    raw_transcript: list[dict[str, object]] | None = Field(
         default=None,
-        description="Full interaction transcript if the target can provide one.",
+        description=(
+            "Ordered message history if the target can provide one. Shape is a "
+            "near-OpenAI chat-completions list (role/content/name/...); exact "
+            "fields depend on whether an agent loop participated."
+        ),
     )
 
 

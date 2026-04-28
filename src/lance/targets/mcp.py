@@ -8,11 +8,14 @@ Semantics of :meth:`MCPTarget.interact` in v0.1 (no LLM in the loop yet):
     * Pick the server's first tool.
     * Call it with ``user_input`` bound to the tool's single string parameter.
     * Return a :class:`TargetTurn` whose ``response`` is the concatenated
-      text content of the tool result and whose ``tool_calls`` records the
-      single invocation.
+      text content of the tool result, whose ``tool_calls`` records the
+      single invocation, and whose ``raw_transcript`` is a two-element
+      list ``[user, tool]`` reflecting that no agent turn occurred.
 
 Future milestones will wrap an LLM-backed agent adapter around this to turn
-``interact`` into a proper agentic round-trip.
+``interact`` into a proper agentic round-trip; the transcript will then grow
+to include ``system`` and ``assistant`` messages with ``tool_call_id``
+bindings.
 """
 
 from __future__ import annotations
@@ -116,11 +119,24 @@ class MCPTarget:
                 "result": response_text,
             }
         ]
+        # v0.1 transcript shape: similar-to-but-not-strict OpenAI chat-completions.
+        # No tool_call_id (no assistant message to bind to), no system prompt
+        # (no agent yet). Normalises to the full shape when the agent loop lands.
+        transcript: list[dict[str, object]] = [
+            {"role": "user", "content": user_input},
+            {
+                "role": "tool",
+                "name": tool_name,
+                "arguments": arguments,
+                "content": response_text,
+                "is_error": bool(result.isError),
+            },
+        ]
         return TargetTurn(
             input=user_input,
             response=response_text,
             tool_calls=tool_calls,
-            raw_transcript=None,
+            raw_transcript=transcript,
         )
 
     async def reset(self) -> None:

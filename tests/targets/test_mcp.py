@@ -52,6 +52,17 @@ def test_interact_returns_populated_target_turn(allowlist: Path) -> None:
         assert call["is_error"] is False
         assert call["result"] == "pong"
 
+        # raw_transcript should reflect the v0.1 [user, tool] exchange.
+        assert turn.raw_transcript is not None
+        assert len(turn.raw_transcript) == 2
+        user_msg, tool_msg = turn.raw_transcript
+        assert user_msg == {"role": "user", "content": "ping"}
+        assert tool_msg["role"] == "tool"
+        assert tool_msg["name"] == "read_document"
+        assert tool_msg["arguments"] == {"doc_id": "ping"}
+        assert tool_msg["content"] == "pong"
+        assert tool_msg["is_error"] is False
+
     asyncio.run(_run())
 
 
