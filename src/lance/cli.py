@@ -37,6 +37,14 @@ app = typer.Typer(
 
 console = Console()
 
+# Probe input is the literal MCP tool argument in v0.1 (no agent loop yet),
+# so it must be a known fixture doc_id rather than an English instruction.
+# Choosing q3_report ensures the probe exercises the full transport + tool
+# execution path and surfaces specific fixture content (a Q3 2025 revenue
+# figure) in the response — proving content round-tripped end-to-end.
+# Will become a natural-language instruction once the agent layer lands.
+_PROBE_INPUT = "q3_report"
+
 ATTACK_REGISTRY: dict[str, type[Attack]] = {
     IndirectInjectionViaToolOutput.name: IndirectInjectionViaToolOutput,
 }
@@ -144,7 +152,7 @@ async def _run_async(
     target_instance = await target_cls.from_config(config)
     try:
         if probe:
-            turn = await target_instance.interact("ping")
+            turn = await target_instance.interact(_PROBE_INPUT)
             console.print_json(turn.model_dump_json())
             return
 

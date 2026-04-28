@@ -14,7 +14,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from lance.cli import app
+from lance.cli import _PROBE_INPUT, app
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 TARGET_YAML = REPO_ROOT / "examples" / "mcp_vulnerable" / "target.yaml"
@@ -75,9 +75,13 @@ def test_run_probe_prints_target_turn_json(at_repo_root: Path) -> None:
     )
     assert result.exit_code == 0, result.stdout
     payload = json.loads(_extract_json_block(result.stdout))
-    assert payload["input"] == "ping"
-    assert payload["response"] == "pong"
+    assert payload["input"] == _PROBE_INPUT
+    # The probe must surface fixture content end-to-end, not just a stub reply.
+    assert "$12.4M" in payload["response"]
     assert payload["tool_calls"][0]["name"] == "read_document"
+    assert payload["tool_calls"][0]["arguments"] == {"doc_id": _PROBE_INPUT}
+    assert payload["raw_transcript"] is not None
+    assert any(msg["role"] == "tool" for msg in payload["raw_transcript"])
 
 
 @pytest.mark.integration
