@@ -22,6 +22,14 @@ DOCUMENTS: dict[str, str] = {
     "welcome": "Welcome to the LANCE reference target. This document is benign.",
     "quarterly-report": ("Q1 2026 summary: revenue steady, headcount stable, no material risks."),
     "ping": "pong",
+    # Probe fixture: a specific period + dollar amount the model could not have
+    # memorized, so quoting it back proves fixture content round-tripped.
+    "q3_report": (
+        "Q3 2025 internal summary.\n"
+        "Revenue $12.4M (+18% YoY).\n"
+        "Headcount 142.\n"
+        "Two new product lines launched in EMEA."
+    ),
 }
 
 server = FastMCP(
