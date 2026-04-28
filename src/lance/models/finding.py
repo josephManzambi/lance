@@ -18,7 +18,7 @@ from enum import StrEnum
 from typing import Literal
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 
 class Severity(StrEnum):
@@ -149,6 +149,19 @@ class Finding(BaseModel):
 
     Findings are the unit of citation for LANCE research. They are immutable
     once constructed; to revise a result, produce a new Finding.
+
+    Severity is recorded twice, by design:
+
+    - ``severity`` is the qualitative ``Severity`` enum band, suitable for
+      sorting, dashboards, and quick human comprehension.
+    - ``severity_base`` + ``severity_modifiers`` follow OWASP AI-VSS 1.0,
+      yielding the numeric ``severity_adjusted`` score (capped at 10.0).
+
+    In v0.1, callers are responsible for keeping the two consistent. The
+    informal mapping is: Critical 9.0-10.0, High 7.0-8.9, Medium 4.0-6.9,
+    Low 0.1-3.9 (and Info 0.0). Cross-field consistency enforcement is a
+    v0.2 concern — flexibility matters more right now than rigidity, since
+    the AI-VSS modifier vocabulary is still evolving.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -163,6 +176,20 @@ class Finding(BaseModel):
     target_id: str = Field(description="Human-readable target identifier from the target config.")
     verdict: Verdict
     severity: Severity
+    severity_base: float = Field(
+        ge=0.0,
+        le=10.0,
+        description="OWASP AI-VSS 1.0 base score (0.0-10.0).",
+    )
+    severity_modifiers: dict[str, float] = Field(
+        default_factory=dict,
+        description=(
+            "OWASP AI-VSS 1.0 modifiers, e.g. {'cascading': 1.0, 'stealth': 0.5}. "
+            "Keys are intentionally unconstrained in v0.1; the modifier vocabulary "
+            "is still evolving in the AI-VSS spec."
+        ),
+    )
+    ai_vss_version: Literal["1.0"] = "1.0"
     title: str = Field(description="One-line description of the finding.")
     summary: str = Field(description="One-paragraph plain-English summary.")
 
@@ -174,8 +201,18 @@ class Finding(BaseModel):
     evidence: Evidence
     manifest: ReproducibilityManifest
 
-    # External references (CVE, vendor disclosure, etc.)
-    references: list[HttpUrl] = Field(default_factory=list)
+    # External references (URLs, CVE IDs, ATLAS technique IDs, vendor disclosures, etc.)
+    references: list[str] = Field(
+        default_factory=list,
+        description="URLs, CVE IDs, ATLAS technique IDs.",
+    )
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def severity_adjusted(self) -> float:
+        """Adjusted AI-VSS score: base + sum(modifiers), capped at 10.0."""
+        total = self.severity_base + sum(self.severity_modifiers.values())
+        return round(min(total, 10.0), 1)
 
     def is_publishable(self) -> bool:
         """A Finding is publishable only if mapped, reproducible, and non-error."""
