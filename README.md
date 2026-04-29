@@ -69,7 +69,7 @@ Flaky or unreviewed attacks are disabled by default.
 
 ## License
 
-Apache 2.0. See [`LICENSE`](./LICENSE).
+MIT. See [`LICENSE`](./LICENSE).
 
 ## Citing LANCE
 
