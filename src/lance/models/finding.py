@@ -20,6 +20,8 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 
+from lance.taxonomy.art import ARTAlignment, ARTBehavior
+
 
 class Severity(StrEnum):
     """Finding severity. Aligned with CVSS qualitative bands."""
@@ -66,10 +68,51 @@ class FrameworkMapping(BaseModel):
         default_factory=list,
         description="CSA AI Controls Matrix identifiers.",
     )
+    art_detail: ARTAlignment | None = Field(
+        default=None,
+        description=(
+            "Optional structured alignment with the ART benchmark taxonomy "
+            "(arXiv:2507.20526). Carries the canonical (category, behavior, "
+            "vector, strategy) tuple. The flat ``art`` tag list is derived "
+            "from this object."
+        ),
+    )
 
     def is_mapped(self) -> bool:
-        """A Finding must have at least one mapping to be publishable."""
+        """A Finding must have at least one primary-framework mapping to be publishable.
+
+        ART is intentionally excluded from this check: it is a benchmark
+        cross-reference, not a primary taxonomy. A Finding tagged only with
+        ART metadata is not publishable on its own — it must also map to
+        OWASP ASI, MITRE ATLAS, or CSA AICM.
+        """
         return bool(self.owasp_asi or self.mitre_atlas or self.csa_aicm)
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def art(self) -> list[str]:
+        """Flat ART tag list derived from ``art_detail``.
+
+        Returns prefixed tags for cross-referencing with the ART leaderboard:
+        ``category:<value>``, ``vector:<value>``, optionally ``behavior:<value>``
+        (only when not OTHER — the OTHER sentinel has no leaderboard
+        cross-reference value), and optionally ``strategy:<value>``.
+
+        Returns an empty list when ``art_detail`` is ``None``. The structured
+        ``art_detail`` object remains the source of truth; this list is a
+        derived view and cannot drift from it.
+        """
+        if self.art_detail is None:
+            return []
+        tags = [
+            f"category:{self.art_detail.category.value}",
+            f"vector:{self.art_detail.attack_vector.value}",
+        ]
+        if self.art_detail.behavior is not ARTBehavior.OTHER:
+            tags.append(f"behavior:{self.art_detail.behavior.value}")
+        if self.art_detail.attack_strategy is not None:
+            tags.append(f"strategy:{self.art_detail.attack_strategy.value}")
+        return tags
 
 
 class DeploymentContext(BaseModel):
